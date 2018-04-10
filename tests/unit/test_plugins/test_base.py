@@ -174,11 +174,11 @@ class TestBasePlugin(unittest.TestCase):
         alchemy = "mysql://testuser:password@localhost/spamassassin"
         context = oa.context.GlobalContext()
 
-        oa.plugins.base.BasePlugin.dsn = alchemy
-        plugin = oa.plugins.base.BasePlugin(context)
+        with patch("oa.plugins.base.BasePlugin.dsn", new=alchemy):
+            plugin = oa.plugins.base.BasePlugin(context)
 
-        plugin.finish_parsing_end(self.mock_ruleset)
-        self.mock_create_engine.assert_called_with(alchemy)
+            plugin.finish_parsing_end(self.mock_ruleset)
+            self.mock_create_engine.assert_called_with(alchemy)
 
     def test_get_session(self):
         engine = MagicMock()
