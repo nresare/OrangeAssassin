@@ -138,18 +138,17 @@ class TestBasePlugin(unittest.TestCase):
                                                                    "value2"])
 
     def test_create_engine_from_dbi(self):
-        dbi = "DBI:mysql:spamassassin:localhost"
         alchemy = "mysql://testuser:password@localhost/spamassassin"
-        mock_dbi = patch("oa.plugins.base.dbi_to_alchemy",
-                         return_value=alchemy).start()
+        patch("oa.plugins.base.dbi_to_alchemy", new=alchemy).start()
 
-        oa.plugins.base.BasePlugin.dsn_name = "test_plugin"
         plugin = oa.plugins.base.BasePlugin(self.mock_ctxt)
 
         expected = self.mock_create_engine(alchemy)
-        plugin.finish_parsing_end(self.mock_ruleset)
-        self.mock_ctxt.set_plugin_data.assert_called_with("BasePlugin",
-                                                          "engine", expected)
+        with patch("oa.plugins.base.BasePlugin.dsn", new="test_plugin"):
+            plugin.finish_parsing_end(self.mock_ruleset)
+        self.mock_ctxt.set_plugin_data.assert_called_with(
+            "BasePlugin", "engine", expected
+        )
 
     def test_create_engine_from_dbi_real_context(self):
         dbi = "DBI:mysql:spamassassin:localhost"
@@ -158,7 +157,6 @@ class TestBasePlugin(unittest.TestCase):
                          return_value=alchemy).start()
         context = oa.context.GlobalContext()
 
-        oa.plugins.base.BasePlugin.dsn = dbi
         oa.plugins.base.BasePlugin.sql_username = "testuser"
         oa.plugins.base.BasePlugin.sql_password = "password"
         plugin = oa.plugins.base.BasePlugin(context)
@@ -166,7 +164,8 @@ class TestBasePlugin(unittest.TestCase):
         plugin_data = context.plugin_data["BasePlugin"]
         plugin_data["test_plugin_dsn"] = dbi
 
-        plugin.finish_parsing_end(self.mock_ruleset)
+        with patch("oa.plugins.base.BasePlugin.dsn", new=dbi):
+            plugin.finish_parsing_end(self.mock_ruleset)
         mock_dbi.assert_called_with(dbi, "testuser", "password")
         self.mock_create_engine.assert_called_with(alchemy)
 
