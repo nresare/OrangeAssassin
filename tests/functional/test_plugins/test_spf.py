@@ -489,7 +489,7 @@ Received:from example.net (example.com [1.2.3.4]) by example.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_spf_with_no_receive_spf_header_with_invalid_spf_timeout_method(
             self):
@@ -779,7 +779,7 @@ Received: from google.com ([2a00:1450:4017:804::200e]) by test.com
         result = self.check_pad(email)
         self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
-    def test_whitelist_from_spf_with_spf_softfail(self):
+    def test_whitelist_from_spf_with_spf_previously_softfail(self):
         lists = """whitelist_from_spf *spamexperts.com"""
 
         email = """Received: from example.com ([1.2.3.4]) by test.com
@@ -787,7 +787,7 @@ Received: from google.com ([2a00:1450:4017:804::200e]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_whitelist_from_spf_with_spf_neutral(self):
         lists = """whitelist_from_spf *spamexperts.com"""
@@ -856,7 +856,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_whitelist_from_spf_with_identity_none(self):
         lists = """whitelist_from_spf *spamexperts.com"""
@@ -867,7 +867,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_SOFTFAIL'])
+        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_FAIL'])
 
     def test_whitelist_from_spf_with_identity_mfrom(self):
         lists = """whitelist_from_spf *spamexperts.com"""
@@ -900,7 +900,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     # test for check_for_def_spf_whitelist_from()
     def test_def_whitelist_from_spf_full_address(self):
@@ -1020,7 +1020,7 @@ Received: from example.com ([1.2.3.4]) by test.com
         result = self.check_pad(email)
         self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
-    def test_def_whitelist_from_spf_with_spf_softfail(self):
+    def test_def_whitelist_from_spf_with_spf_previously_softfail(self):
         lists = """def_whitelist_from_spf *spamexperts.com"""
 
         email = """Received: from example.com ([1.2.3.4]) by test.com
@@ -1028,7 +1028,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_def_whitelist_from_spf_with_spf_neutral(self):
         lists = """def_whitelist_from_spf *spamexperts.com"""
@@ -1097,7 +1097,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_def_whitelist_from_spf_with_identity_none(self):
         lists = """def_whitelist_from_spf *spamexperts.com"""
@@ -1108,7 +1108,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_SOFTFAIL'])
+        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_FAIL'])
 
     def test_def_whitelist_from_spf_with_identity_mfrom(self):
         lists = """def_whitelist_from_spf *spamexperts.com"""
@@ -1141,7 +1141,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_SOFTFAIL', 'SPF_HELO_FAIL'])
+        self.check_report(result, 2, ['SPF_FAIL', 'SPF_HELO_FAIL'])
 
     def test_def_whitelist_from_spf_with_identity_None(self):
         lists = """def_whitelist_from_spf *spamexperts.com"""
@@ -1152,7 +1152,7 @@ Received: from example.com ([1.2.3.4]) by test.com
 
         self.setup_conf(config=CONFIG, pre_config=PRE_CONFIG + lists)
         result = self.check_pad(email)
-        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_SOFTFAIL'])
+        self.check_report(result, 2, ['SPF_HELO_FAIL', 'SPF_FAIL'])
 
 def suite():
     """Gather all the tests from this package in a test suite."""
