@@ -138,13 +138,13 @@ class TestDaemonBase(unittest.TestCase):
             args.append(os.path.abspath("padd.log"))
         cls.padd_procs.append(subprocess.Popen(args))
         # Allow time for server to initialize
-        sleep_time = 1.0
+        sleep_time = 10.0
         if platform.python_implementation().lower() == "pypy":
             # PyPy is much slower at initialization, so allow
             # for more time. This is only ran once so the impact
             # is minimal anyway.
             # This should prevent random test failures on PyPy.
-            sleep_time = 2.0
+            sleep_time = 20.0
         time.sleep(sleep_time)
 
     @classmethod
