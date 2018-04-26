@@ -1,6 +1,7 @@
 """Tests for the Bayes plug-in."""
 
 import unittest
+from tempfile import NamedTemporaryFile
 
 import mock
 from mock import MagicMock
@@ -8,14 +9,36 @@ from oa.plugins.bayes import BayesPlugin, Store
 from oa.message import Message
 
 
+def _make_mock_context(presets):
+    """
+    Construct a context mock instance that implements get_plugin_data() and
+    set_plugin_data() with a simple global backing dict and the quirk that
+    get_plugin_data() will return a value from the preset dict if the
+    corresponding key exists there.
+    """
+    backing = {}
+    ctx = MagicMock()
+
+    def _get_plugin_effect(_, key):
+        if key in presets:
+            return presets[key]
+        return backing[key]
+
+    ctx.get_plugin_data.side_effect = _get_plugin_effect
+
+    def _set_plugin_effect(_, key, value):
+        backing[key] = value
+
+    ctx.set_plugin_data.side_effect = _set_plugin_effect
+    return ctx
+
+
 class BayesTests(unittest.TestCase):
     """Test cases for the BayesPlugin class."""
 
     def setUp(self):
         self.global_data = {"use_bayes": True}
-        self.mock_ctxt = MagicMock(**{
-            "get_plugin_data.side_effect": lambda p, k: self.global_data[k],
-            "set_plugin_data.side_effect": lambda p, k, v: self.global_data.setdefault(k, v)})
+        self.mock_ctxt = _make_mock_context(self.global_data)
         engine = {
             "hostname":"",
             "user":"",
@@ -49,6 +72,19 @@ class BayesTests(unittest.TestCase):
         self.global_data["use_bayes"] = False
         result = b.learn_message(None, None)
         self.assertEqual(result, None)
+
+
+class BayesDatabaseTest(unittest.TestCase):
+    def test_empty_database(self):
+        temp_file = NamedTemporaryFile()
+        backing = {"bayes_sql_dsn": "sqlite:///{}".format(temp_file.name)}
+        ctx = _make_mock_context(backing)
+        b = BayesPlugin(ctx)
+        b.finish_parsing_end(None)
+
+        store = Store(b)
+        store.tie_db_writeable()
+        self.assertIsNone(store.seen_get("non-existent-id"))
 
 
 def suite():
